@@ -1,0 +1,26 @@
+h2 {
+    color: green;
+    font-style: italic;
+  }
+  
+  .persons {
+    color: black;
+    padding-top: 5px;
+    font-size: 15px;
+  }
+  
+  .error {
+    color: green;
+    background: lightgrey;
+    font-size: 20px;
+    border-style: solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  button:hover{
+    background-color: blue;
+    color: white;
+  }
+  
