@@ -4,6 +4,7 @@ import PersonsList from "./components/PersonsList/PersonsList";
 import Filter from "./components/Filter/Filter";
 import personsService from "./services/persons";
 import Notification from "./components/Notification/Notification";
+import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
 
 const App = () => {
   const [allPersons, setAllPersons] = useState([]);
@@ -12,29 +13,32 @@ const App = () => {
   const [search, setSearch] = useState("");
   const [singlePerson, setSinglePerson] = useState("");
   const [message, setMessage] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     personsService.getAll().then((initialPersons) => {
       setAllPersons(initialPersons);
     });
-  }, [allPersons]);
+  }, []);
 
   const deletePerson = (id, name) => {
     if (window.confirm(`Delete ${name} ?`)) {
       personsService
         .remove(id)
-        .then(() => {
+        .then((result) => {
+          console.log(result)
+          setAllPersons(allPersons.filter(person => person.id !== id ))
           setMessage(`${name} is deleted`);
           setTimeout(() => {
             setMessage(null);
           }, 5000);
         })
         .catch(() => {
-          setMessage(
+          setError(
             `Information of ${name} has alredy been removed from server`
           );
           setTimeout(() => {
-            setMessage(null);
+            setError(null);
           }, 5000);
         });
     }
@@ -59,18 +63,18 @@ const App = () => {
         personsService
           .update(person.id, personObject)
           .then((returnedPerson) => {
-            setAllPersons([...allPersons, returnedPerson]);
+            setAllPersons(allPersons.map(person => person.id !== returnedPerson.id ? person : returnedPerson))
             setMessage(`Information of ${person.name} is update`);
             setTimeout(() => {
               setMessage(null);
             }, 5000);
           })
           .catch(() => {
-            setMessage(
+            setError(
               `Information of ${person.name} has alredy been removed from server`
             );
             setTimeout(() => {
-              setMessage(null);
+              setError(null);
             }, 5000);
           });
       }
@@ -86,10 +90,10 @@ const App = () => {
             setMessage(null);
           }, 5000);
         })
-        .catch(() => {
-          setMessage(`Has been error from the server`);
+        .catch((error) => {
+          setError(error.request.response);
           setTimeout(() => {
-            setMessage(null);
+            setError(null);
           }, 5000);
         });
       setNewName("");
@@ -121,6 +125,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+
+      {error !== null ? <ErrorMessage error={error} /> : ""}
 
       {message !== null ? <Notification message={message} /> : ""}
 
