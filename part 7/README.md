@@ -1,0 +1,1 @@
+All exercises for part 7
